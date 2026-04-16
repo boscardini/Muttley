@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Novo Palestrante</title>
+</head>
+<body style="background:#121212; color:white; font-family:sans-serif;">
+
+<h2>Cadastrar Palestrante</h2>
+
+<form th:action="@{/palestrante/salvar}" th:object="${palestrante}" method="post">
+
+    <input type="hidden" th:field="*{id}" />
+
+    <p>
+        Nome:<br>
+        <input type="text" th:field="*{nome}">
+    </p>
+
+    <p>
+        Telefone:<br>
+        <input type="text" th:field="*{telefone}">
+    </p>
+
+    <p>
+        CPF:<br>
+        <input type="text" th:field="*{cpf}">
+    </p>
+
+    <button type="submit">Salvar</button>
+    <a th:href="@{/palestrante}">Voltar</a>
+
+</form>
+
+</body>
+</html>

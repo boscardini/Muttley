@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Palestrantes</title>
+    <style>
+        body { font-family: sans-serif; margin: 50px; background-color: #121212; color: white; }
+        table { width: 100%; border-collapse: collapse; background: #1e1e1e; }
+        th, td { padding: 10px; border-bottom: 1px solid #333; }
+        th { background: #2b2b2b; color: #4CAF50; }
+        a { margin-right: 10px; }
+        .btn { background: #4CAF50; padding: 10px; color: white; text-decoration: none; border-radius: 5px; }
+        .delete { color: red; }
+    </style>
+</head>
+<body>
+
+<h2>Lista de Palestrantes</h2>
+
+<p th:if="${message}" th:text="${message}"></p>
+<p th:if="${error}" th:text="${error}"></p>
+
+<a class="btn" th:href="@{/palestrante/cadastro-palestrante}">
+    + Novo Palestrante
+</a>
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>CPF</th>
+        <th>Ações</th>
+    </tr>
+
+    <tr th:each="p : ${listaPalestrantes}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.nome}"></td>
+        <td th:text="${p.telefone}"></td>
+        <td th:text="${p.cpf}"></td>
+        <td>
+            <a th:href="@{/palestrante/formulario/{id}(id=${p.id})}">Editar</a>
+
+            <a class="delete"
+               th:href="@{/palestrante/delete/{id}(id=${p.id})}"
+               onclick="return confirm('Deseja excluir?')">
+               Excluir
+            </a>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>
