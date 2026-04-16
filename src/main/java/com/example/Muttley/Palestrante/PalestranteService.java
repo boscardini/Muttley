@@ -1,61 +1,52 @@
 package com.example.Muttley.Palestrante;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class PalestranteService {
 
-    @Autowired
-    private PalestranteRepository repository;
+    private final PalestranteRepository repository;
+    private final PalestranteMapper mapper;
 
-    @Autowired
-    private PalestranteMapper mapper;
-
-    // 🔹 SALVAR OU ATUALIZAR
-    public Palestrante salvarOuAtualizar(AtualizacaoPalestrante dto) {
-
-        if (dto.id() != null) {
-            // 🔄 Atualização
-            Palestrante existente = repository.findById(dto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Palestrante não encontrado com ID: " + dto.id()));
-
-            mapper.updateEntityFromDto(dto, existente);
-            return repository.save(existente);
-
-        } else {
-            // 🆕 Criação
-            Palestrante novo = mapper.toEntity(dto);
-            return repository.save(novo);
-        }
+    @Transactional
+    public PalestranteResponseDTO salvar(PalestranteRequestDTO dto) {
+        Palestrante novoPalestrante = mapper.toEntity(dto);
+         return mapper.toDto(repository.save(novoPalestrante));
     }
 
-    // 🔹 LISTAGEM (Entity)
-    public List<Palestrante> procurarTodos() {
-        return repository.findAll(Sort.by("nome").ascending());
+    @Transactional
+    public PalestranteResponseDTO atualizar(Long id, PalestranteRequestDTO dto) {
+        Palestrante palestranteExistente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Palestrante não encontrado"));
+        
+        mapper.updateEntityFromDto(dto, palestranteExistente);
+        
+        return mapper.toDto(repository.save(palestranteExistente));
     }
 
-    // 🔹 LISTAGEM (DTO) ⭐ recomendado
-    public List<ListagemPalestrante> listarTodos() {
-        return repository.findAll(Sort.by("nome").ascending())
-                .stream()
-                .map(mapper::toListagemDto)
+    public List<PalestranteResponseDTO> listarTodos() {
+        return repository.findAll().stream()
+                .map(mapper::toDto)
                 .toList();
     }
 
-    // 🔹 BUSCAR POR ID
-    public Optional<Palestrante> procurarPorId(Long id) {
-        return repository.findById(id);
+    public PalestranteResponseDTO buscarPorId(Long id) {
+        Palestrante palestrante = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Palestrante não encontrado"));
+        return mapper.toDto(palestrante);
     }
 
-    // 🔹 DELETAR
-    public void apagarPorId(Long id) {
+    @Transactional
+    public void apagar(Long id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Palestrante não encontrado");
+        }
         repository.deleteById(id);
     }
 }
