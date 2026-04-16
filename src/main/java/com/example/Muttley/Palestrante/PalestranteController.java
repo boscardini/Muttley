@@ -23,12 +23,12 @@ public class PalestranteController {
 
     // LISTAGEM (igual ao aluno)
     @GetMapping
-    public String carregaPaginaFormulario(Model model) {
+    public String listar(Model model) {
         model.addAttribute("listaPalestrantes", service.procurarTodos());
         return "palestrante/listagem";
     }
 
-    // FORMULÁRIO (igual ao cadastro-aluno)
+    // CADASTRO (igual ao /cadastro-aluno)
     @GetMapping("/cadastro-palestrante")
     public String mostrarFormulario(@RequestParam(required = false) Long id, Model model) {
 
@@ -44,14 +44,14 @@ public class PalestranteController {
         }
 
         model.addAttribute("palestrante", dto);
-        return "palestrante/cadastro";
+        return "palestrante/cadastro"; // 🔥 igual aluno
     }
 
-    // FORMULÁRIO POR ID (igual ao aluno/formulario/{id})
+    // FORMULÁRIO POR ID (igual aluno/formulario/{id})
     @GetMapping("/formulario/{id}")
-    public String carregarFormularioPorId(@PathVariable("id") Long id,
-                                          Model model,
-                                          RedirectAttributes redirectAttributes) {
+    public String carregarFormulario(@PathVariable("id") Long id,
+                                     Model model,
+                                     RedirectAttributes redirectAttributes) {
 
         try {
             Palestrante p = service.procurarPorId(id)
@@ -68,37 +68,42 @@ public class PalestranteController {
         }
     }
 
-    // SALVAR (igual ao aluno)
+    // SALVAR (igual aluno)
     @PostMapping("/salvar")
     public String salvar(@ModelAttribute("palestrante") @Valid AtualizacaoPalestrante dto,
                          BindingResult result,
                          RedirectAttributes redirectAttributes,
                          Model model) {
 
+        // 🔴 erro de validação
         if (result.hasErrors()) {
-            return "palestrante/formulario";
+            return dto.id() == null 
+                ? "palestrante/cadastro" 
+                : "palestrante/formulario";
         }
 
         try {
             Palestrante salvo = service.salvarOuAtualizar(dto);
 
             String mensagem = dto.id() != null
-                    ? "Palestrante ID '" + salvo.getId() + "' atualizado com sucesso!"
-                    : "Palestrante ID '" + salvo.getId() + "' criado com sucesso!";
+                    ? "Palestrante " + salvo.getNome() + "' atualizado com sucesso!"
+                    : "Palestrante " + salvo.getNome()+ "' criado com sucesso!";
 
             redirectAttributes.addFlashAttribute("message", mensagem);
-
             return "redirect:/palestrante";
 
-        } catch (EntityNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        } catch (Exception e) {
+            // 🔥 MOSTRA ERRO REAL (repository/banco)
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("palestrante", dto);
 
-            return "redirect:/palestrante/formulario" +
-                    (dto.id() != null ? "?id=" + dto.id() : "");
+            return dto.id() == null 
+                ? "palestrante/cadastro" 
+                : "palestrante/formulario";
         }
     }
 
-    // DELETE (igual ao aluno)
+    // DELETE (igual aluno)
     @GetMapping("/delete/{id}")
     @Transactional
     public String deletar(@PathVariable("id") Long id,
