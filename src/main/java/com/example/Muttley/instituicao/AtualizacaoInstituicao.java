@@ -20,6 +20,9 @@ public record AtualizacaoInstituicao(
         String senha,
 
         @NotBlank(message = "Confirme sua senha") 
-        String confirmarSenha
+        String confirmarSenha,
+        
+        @NotBlank(message = "Endereço é obrigatório")
+        String endereco
 ) {
 }
