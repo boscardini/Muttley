@@ -5,5 +5,6 @@ import jakarta.validation.constraints.NotBlank;
 public record PalestranteRequestDTO (
     @NotBlank String nome,
     @NotBlank String telefone,
-    String cpf
+    @NotBlank String cpf,
+    @NotBlank String convite
 ) {}

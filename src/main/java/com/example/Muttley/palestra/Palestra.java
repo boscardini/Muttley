@@ -1,5 +1,9 @@
 package com.example.Muttley.palestra;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,10 +15,15 @@ import lombok.*;
 public class Palestra {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+    private Long id;    
     private String titulo;
+    private String descricao;
+    private List<String>habilidades;
     private String palestrante;
+    private LocalDate dataInicio = LocalDate.now();
+    private LocalTime horaInicio = LocalTime.now();
+    private LocalDate dataFim = LocalDate.now();
+    private LocalTime horaFim = LocalTime.now();
     
     @Column(unique = true)
     private String codigo; 

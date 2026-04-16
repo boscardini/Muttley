@@ -13,8 +13,11 @@ public class Instituicao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    private String sigla;
     private String cnpj;
-    private String email;
+    private String cep;
+    private String cidade;
+    private String emailInstitucional;
     private String senha;
     private String endereco;
 
