@@ -4,23 +4,13 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel =  "spring")
 public interface PalestranteMapper {
+    PalestranteResponseDTO toDto(Palestrante palestrante);
 
+    @Mapping(target = "id", ignore = true)
+    Palestrante toEntity(PalestranteRequestDTO dto);
 
-	// Entity → DTO
-	AtualizacaoPalestrante toDTO(Palestrante palestrante);
-
-	// DTO → Entity (novo)
-	@Mapping(target = "id", ignore = true)
-	Palestrante toEntity(AtualizacaoPalestrante dto);
-
-	// Atualizar existente
-	@Mapping(target = "id", ignore = true)
-	void updateEntityFromDto(AtualizacaoPalestrante dto, @MappingTarget Palestrante palestrante);
-
-  
-    // 🔹 LISTAGEM
-    ListagemPalestrante toListagemDto(Palestrante palestrante);
-
+    @Mapping(target = "id", ignore = true)
+    void updateEntityFromDto(PalestranteRequestDTO dto, @MappingTarget Palestrante palestrante);
 }

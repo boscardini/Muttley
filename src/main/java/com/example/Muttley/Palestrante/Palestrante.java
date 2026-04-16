@@ -1,40 +1,29 @@
 package com.example.Muttley.Palestrante;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-
 @Entity
-@Table(name = "palestrante")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of ="id")
+@Table(name = "palestrantes")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Palestrante {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "palestrante_id")
     private Long id;
-
     private String nome;
     private String telefone;
+    @Column(unique = true)
     private String cpf;
 
-    
-    public void atualizarInformacoes(AtualizacaoPalestrante dados) {
-        if (dados.nome() != null)
-            this.nome = dados.nome();
-
-        if (dados.telefone() != null)
-            this.telefone = dados.telefone();
-
-        if (dados.cpf() != null)
-            this.cpf = dados.cpf();
-    }
 }

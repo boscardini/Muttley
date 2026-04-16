@@ -1,53 +1,53 @@
 package com.example.Muttley.aluno;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class AlunoService {
 
-	@Autowired
-	private AlunoRepository alunoRepository;
+    private final AlunoRepository repository;
+    private final AlunoMapper mapper;
 
-	@Autowired
-	private AlunoMapper alunoMapper;
+    @Transactional
+    public AlunoResponseDTO salvar(AlunoRequestDTO dto) {
+        Aluno aluno = mapper.toEntity(dto);
+        Aluno alunoSalvo = repository.save(aluno);
+        return mapper.toDto(alunoSalvo);
+    }
 
-	public Aluno salvarOuAtualizar(AtualizacaoAluno dto) {
-		if (dto.id() != null) {
-			// ATUALIZAÇÃO: Busca o aluno existente e aplica as mudanças do DTO
-			Aluno existente = alunoRepository.findById(dto.id())
-					.orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado com ID: " + dto.id()));
+    @Transactional
+    public AlunoResponseDTO atualizar(Long id, AlunoRequestDTO dto) {
+        Aluno alunoExistente = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+        mapper.updateEntityFromDto(dto, alunoExistente);
+        
+        return mapper.toDto(repository.save(alunoExistente));
+    }
 
-			alunoMapper.updateEntityFromDto(dto, existente);
-			return alunoRepository.save(existente);
-		} else {
-			// CRIAÇÃO: Converte o DTO em uma nova entidade Aluno
-			Aluno novoAluno = alunoMapper.toEntityFromAtualizacao(dto);
-			return alunoRepository.save(novoAluno);
-		}
-	}
+    public List<AlunoResponseDTO> listarTodos() {
+        return repository.findAll()
+                .stream()
+                .map(mapper::toDto)
+                .toList();
+    }
 
-	public List<Aluno> procurarTodos() {
-		// Ordena por material (ou outro campo que você preferir, como "id")
-		return alunoRepository.findAll(Sort.by("nome").ascending());
-	}
-
-	public void apagarPorId(Long id) {
-		alunoRepository.deleteById(id);
-	}
-
-	public Optional<Aluno> procurarPorId(Long id) {
-		return alunoRepository.findById(id);
-	}
-	
-	public Optional<Aluno> realizarLogin(String email, String senha) {
-	    return alunoRepository.findByEmail(email)
-	            .filter(aluno -> aluno.getSenha() != null && aluno.getSenha().equals(senha));
-	}
+    @Transactional
+    public void apagar(Long id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Aluno não encontrado");
+        }
+        repository.deleteById(id);
+    }
+    
+    public AlunoResponseDTO buscarPorId(Long id) {
+        Aluno aluno = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+        return mapper.toDto(aluno);
+    }
 }
