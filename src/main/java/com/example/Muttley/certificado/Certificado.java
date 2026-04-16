@@ -1,21 +1,22 @@
-package com.example.Muttley.aluno;
+package com.example.Muttley.certificado;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.time.LocalDate;
 
 @Entity
-@Table(name = "alunos")
+@Table(name = "certificados")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Aluno {
+public class Certificado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
-    private String curso;
-    @Column(unique = true)
-    private String email;
-    private String linkedin;
     
+    @Column(unique = true)
+    private String codigoAutenticacao;
+    
+    private Integer cargaHoraria;
+    private LocalDate dataEmissao;
 }
