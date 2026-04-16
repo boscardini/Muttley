@@ -13,7 +13,7 @@ import jakarta.persistence.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of ="id")
 public class Palestrante {
 
     @Id
@@ -27,15 +27,17 @@ public class Palestrante {
     // Deixe apenas este campo 'cpf'. Remova o 'CPF' maiúsculo se existir.
     private String cpf;
 
+
+    
     public void atualizarInformacoes(AtualizacaoPalestrante dados) {
-        if (dados.nome() != null) {
+        if (dados.nome() != null)
             this.nome = dados.nome();
-        }
-        if (dados.telefone() != null) {
+
+        if (dados.telefone() != null)
             this.telefone = dados.telefone();
-        }
-        if (dados.cpf() != null) {
+
+        if (dados.cpf() != null)
+
             this.cpf = dados.cpf();
         }
     }
-}
