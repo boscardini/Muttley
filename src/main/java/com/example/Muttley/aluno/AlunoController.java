@@ -1,5 +1,7 @@
 package com.example.Muttley.aluno;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,88 +24,88 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/aluno")
 public class AlunoController {
-	
+
 	@Autowired
 	private AlunoService alunoService;
-	
+
 	@Autowired
-    private AlunoMapper alunoMapper;
-	
+	private AlunoMapper alunoMapper;
+
 	// @Autowired
 	// private CursoService cursoService; // Antigo MarcaService
-	
-	@GetMapping                  
-	public String carregaPaginaFormulario (Model model){ 
+
+	@GetMapping
+	public String carregaPaginaFormulario(Model model) {
 		// Adiciona a lista de alunos ao model para a página de listagem
 		model.addAttribute("listaAlunos", alunoService.procurarTodos());
-        return "aluno/listagem";              
-	} 
-	
+		return "aluno/listagem";
+	}
+
 	@GetMapping("/login")
 	public String telaLogin() {
-	    return "aluno/login"; // Procura o arquivo login.html na pasta templates/aluno/
+		return "aluno/login"; // Procura o arquivo login.html na pasta templates/aluno/
 	}
 
 	@GetMapping("/cadastro-aluno")
 	public String mostrarFormulario(@RequestParam(required = false) Long id, Model model) {
-	    AtualizacaoAluno dto;
-	    if (id != null) {
-	        Aluno aluno = alunoService.procurarPorId(id)
-	            .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
-	        dto = alunoMapper.toAtualizacaoDto(aluno);
-	    } else {
-	        // AJUSTE AQUI: Trocamos os 0 (ints) por "" (Strings)
-	        dto = new AtualizacaoAluno(null, "", "", ""); 
-	    }
-	    model.addAttribute("aluno", dto);
-	    return "aluno/cadastro";
+		AtualizacaoAluno dto;
+		if (id != null) {
+			Aluno aluno = alunoService.procurarPorId(id)
+					.orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+			dto = alunoMapper.toAtualizacaoDto(aluno);
+		} else {
+
+			dto = new AtualizacaoAluno(null, "", "", "", "", "", "");
+		}
+		model.addAttribute("aluno", dto);
+		return "aluno/cadastro";
 	}
-	
-	@GetMapping ("/formulario/{id}")    
-	public String carregaPaginaFormulario (@PathVariable("id") Long id, Model model,
+
+	@GetMapping("/formulario/{id}")
+	public String carregaPaginaFormulario(@PathVariable("id") Long id, Model model,
 			RedirectAttributes redirectAttributes) {
 		AtualizacaoAluno dto;
 		try {
-			if(id != null) {
+			if (id != null) {
 				Aluno aluno = alunoService.procurarPorId(id)
 						.orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
 				// model.addAttribute("cursos", cursoService.procurarTodos());
-				
+
 				// Mapear aluno para AtualizacaoAluno
 				dto = alunoMapper.toAtualizacaoDto(aluno);
 				model.addAttribute("aluno", dto);
 			}
-			return "aluno/formulario";
+			return "aluno/formulario=";
 		} catch (EntityNotFoundException e) {
 			redirectAttributes.addFlashAttribute("error", e.getMessage());
-			return "redirect:/aluno";
+			return "redirect:/aluno/login";
 		}
 	}
 
 	@PostMapping("/salvar")
-    public String salvar(@ModelAttribute("aluno") @Valid AtualizacaoAluno dto,
-                        BindingResult result,
-                        RedirectAttributes redirectAttributes,
-                        Model model) {
-		if (result.hasErrors()) {
-            // Se houver erro de validação, recarrega o formulário
-            // model.addAttribute("cursos", cursoService.procurarTodos());
-            return "aluno/formulario";
-        }
-        try {
-            Aluno alunoSalvo = alunoService.salvarOuAtualizar(dto);
-            String mensagem = dto.id() != null 
-                ? "Aluno ID '" + alunoSalvo.getId() + "' atualizado com sucesso!"
-                : "Aluno ID '" + alunoSalvo.getId() + "' criado com sucesso!";
-            
-            redirectAttributes.addFlashAttribute("message", mensagem);
-            return "redirect:/aluno";
-        } catch (EntityNotFoundException e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/aluno/formulario" + (dto.id() != null ? "?id=" + dto.id() : "");
-        }
+	public String salvar(@ModelAttribute("aluno") @Valid AtualizacaoAluno dto, BindingResult result,
+	        RedirectAttributes redirectAttributes) {
+	    
+	    if (result.hasErrors()) {
+	        return "aluno/cadastro";
+	    }
+
+	    try {
+	        alunoService.salvarOuAtualizar(dto);
+	        
+	        // Se foi uma edição, a mensagem é específica
+	        String mensagem = (dto.id() != null) ? "Usuário Editado com Sucesso!" : "Cadastro realizado com sucesso!";
+	        redirectAttributes.addFlashAttribute("message", mensagem);
+	        
+	        // Redireciona para a página de perfil (exibição dos dados)
+	        return "redirect:/aluno"; 
+
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("error", "Erro ao processar: " + e.getMessage());
+	        return "redirect:/aluno/cadastro-aluno";
+	    }
 	}
-	
+
 	@GetMapping("/delete/{id}")
 	@Transactional
 	public String deletarAluno(@PathVariable("id") Long id, Model model, RedirectAttributes redirectAttributes) {
@@ -113,6 +115,31 @@ public class AlunoController {
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("message", e.getMessage());
 		}
-		return "redirect:/aluno";
+		return "redirect:/aluno/login";
+	}
+	
+	@GetMapping("/editar/{id}")
+	public String editar(@PathVariable Long id, Model model) {
+	    Aluno aluno = alunoService.procurarPorId(id)
+	        .orElseThrow(() -> new EntityNotFoundException("Aluno não encontrado"));
+	    
+	    // Converte a Entity para o DTO que o formulário usa
+	    AtualizacaoAluno dto = alunoMapper.toAtualizacaoDto(aluno);
+	    
+	    model.addAttribute("aluno", dto);
+	    return "aluno/editar"; // Reutiliza o mesmo HTML de cadastro
+	}
+	
+	@PostMapping("/login")
+	public String logar(@RequestParam String email, @RequestParam String senha, RedirectAttributes attributes) {
+	    Optional<Aluno> alunoLogado = alunoService.realizarLogin(email, senha);
+
+	    if (alunoLogado.isPresent()) {
+	        // No futuro, aqui você guardaria o aluno na "Sessão"
+	        return "redirect:/aluno"; 
+	    } else {
+	        attributes.addFlashAttribute("error", "E-mail ou senha inválidos!");
+	        return "redirect:/aluno/login";
+	    }
 	}
 }

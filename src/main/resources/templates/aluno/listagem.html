@@ -2,51 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Alunos - Palestras</title>
+    <title>Meu Perfil - Muttley</title>
     <style>
-        body { font-family: sans-serif; margin: 50px; background-color: #121212; color: white; }
-        table { width: 100%; border-collapse: collapse; background: #1e1e1e; border-radius: 8px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #333; }
-        th { background-color: #2b2b2b; color: #4CAF50; }
-        tr:hover { background-color: #252525; }
-        .btn-novo { background-color: #4CAF50; color: white; padding: 10px 15px; text-decoration: none; border-radius: 4px; display: inline-block; margin-bottom: 20px; }
-        .btn-excluir { color: #ff6b6b; text-decoration: none; font-weight: bold; }
-        .btn-excluir:hover { text-decoration: underline; }
-        .mensagem { color: #4CAF50; margin-bottom: 15px; }
-    </style>
+        body { font-family: sans-serif; background-color: #121212; color: white; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
+        .perfil-card { background: #1e1e1e; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.6); width: 100%; max-width: 500px; }
+        h2 { color: #4CAF50; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .info-group { margin: 20px 0; border-bottom: 1px solid #2b2b2b; padding-bottom: 10px; }
+        .label { color: #888; font-size: 0.85em; text-transform: uppercase; letter-spacing: 1px; }
+        .valor { font-size: 1.1em; margin-top: 5px; font-weight: bold; }
+        .actions { margin-top: 30px; display: flex; gap: 10px; }
+        .btn { padding: 10px 20px; border-radius: 4px; text-decoration: none; font-weight: bold; cursor: pointer; border: none; }
+        .btn-edit { background-color: #4CAF50; color: white; }
+        .btn-logout { background-color: transparent; color: #ff6b6b; border: 1px solid #ff6b6b; }
+        .msg-sucesso { color: #4CAF50; background: rgba(76, 175, 80, 0.1); padding: 10px; border-radius: 4px; width: 100%; max-width: 500px; margin-bottom: 20px; text-align: center; }
+		.btn-delete {
+		    background-color: transparent;
+		    color: #ff6b6b;
+		    border: 1px solid #ff6b6b;
+		    transition: 0.3s;
+		}
+
+		.btn-delete:hover {
+		    background-color: #ff6b6b;
+		    color: white;
+		}
+		</style>
 </head>
 <body>
-    <h2>Alunos Inscritos nas Palestras</h2>
 
-    <div class="mensagem" th:if="${message}" th:text="${message}"></div>
+    <div class="msg-sucesso" th:if="${message}" th:text="${message}"></div>
 
-    <a th:href="@{/aluno/cadastro-aluno}" class="btn-novo">+ Novo Aluno</a>
+    <div class="perfil-card" th:each="aluno : ${listaAlunos}">
+        <h2>Minhas Informações</h2>
+        
+        <div class="info-group">
+            <div class="label">Nome Completo</div>
+            <div class="valor" th:text="${aluno.nome}">Amadeus Bertoline</div>
+        </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Nome</th>
-                <th>Curso</th>
-                <th>E-mail</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="aluno : ${listaAlunos}">
-                <td th:text="${aluno.id}"></td>
-                <td th:text="${aluno.nome}"></td>
-                <td th:text="${aluno.curso}"></td>
-                <td th:text="${aluno.email}"></td>
-                <td>
-                    <a th:href="@{/aluno/delete/{id}(id=${aluno.id})}" 
-                       class="btn-excluir" 
-                       onclick="return confirm('Deseja realmente excluir este aluno?')">Excluir</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="info-group">
+            <div class="label">Curso</div>
+            <div class="valor" th:text="${aluno.curso}">Análise e Desenvolvimento de Sistemas</div>
+        </div>
 
-    <p th:if="${#lists.isEmpty(listaAlunos)}">Nenhum aluno cadastrado no momento.</p>
+        <div class="info-group">
+            <div class="label">E-mail Institucional</div>
+            <div class="valor" th:text="${aluno.email}">aluno@fatec.sp.gov.br</div>
+        </div>
+		
+		<div class="info-group">
+		    <div class="label">LinkedIn</div>
+		    <div class="valor" th:text="${aluno.linkedin}">aluno@fatec.sp.gov.br</div>
+		</div>
+
+        <div class="actions">
+            <a th:href="@{/aluno/editar/{id}(id=${aluno.id})}" class="btn btn-edit">Editar Dados</a>
+			<a th:href="@{/aluno/delete/{id}(id=${aluno.id})}" 
+			       class="btn btn-delete" 
+			       onclick="return confirm('Tem certeza que deseja excluir sua conta? Esta ação não pode ser desfeita.')">
+			       Excluir Conta
+			    </a>
+			<a th:href="@{/aluno/login}" class="btn btn-logout">Sair</a>
+        </div>
+    </div>
+
+    <p th:if="${#lists.isEmpty(listaAlunos)}">
+        Nenhum dado encontrado. <a th:href="@{/aluno/cadastro-aluno}" style="color: #4CAF50;">Cadastre-se aqui.</a>
+    </p>
+
 </body>
 </html>

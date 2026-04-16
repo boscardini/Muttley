@@ -18,16 +18,18 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of ="id")
+@EqualsAndHashCode(of = "id")
 public class Aluno {
-	
+
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "aluno_id")
 	private long id;
 	private String nome;
 	private String curso;
 	private String email;
-	//tes
+	private String senha;
+	private String linkedin;
+	// tes
 
 }

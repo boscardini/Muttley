@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    <h2>Cadastro de Aluno para Palestras</h2>
+    <h2>Editar Dados</h2>
 
     <form th:action="@{/aluno/salvar}" th:object="${aluno}" method="post">
         <input type="hidden" th:field="*{id}" />
@@ -56,7 +56,7 @@
 		</div>
 
 		
-        <button type="submit">Finalizar Cadastro</button>
+        <button type="submit">Editar</button>
         <a th:href="@{/aluno}" style="color: #bbb; margin-left: 10px;">Cancelar</a>
     </form>
 </body>

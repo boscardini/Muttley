@@ -15,11 +15,23 @@ import jakarta.validation.Valid;
 @RequestMapping("/palestrante")
 public class PalestranteController {
 
-    @Autowired
-    private PalestranteService service;
+	@Autowired
+	private PalestranteService service;
 
-    @Autowired
-    private PalestranteMapper mapper;
+	@Autowired
+	private PalestranteMapper mapper;
+
+
+	// LISTAGEM
+	@GetMapping
+	public String listar(Model model) {
+		model.addAttribute("listaPalestrantes", service.procurarTodos());
+		return "palestrante/listagem";
+	}
+
+	// FORMULÁRIO
+	@GetMapping("/formulario")
+	public String formulario(@RequestParam(required = false) Long id, Model model) {
 
     // LISTAGEM (igual ao aluno)
     @GetMapping
@@ -32,16 +44,32 @@ public class PalestranteController {
     @GetMapping("/cadastro-palestrante")
     public String mostrarFormulario(@RequestParam(required = false) Long id, Model model) {
 
-        AtualizacaoPalestrante dto;
+
+		AtualizacaoPalestrante dto;
+
+
+		if (id != null) {
+			Palestrante p = service.procurarPorId(id)
+					.orElseThrow(() -> new EntityNotFoundException("Palestrante não encontrado"));
 
         if (id != null) {
             Palestrante p = service.procurarPorId(id)
                     .orElseThrow(() -> new EntityNotFoundException("Palestrante não encontrado"));
 
-            dto = mapper.toDTO(p);
-        } else {
-            dto = new AtualizacaoPalestrante(null, "", "", "");
-        }
+
+			dto = mapper.toDTO(p);
+		} else {
+			dto = new AtualizacaoPalestrante(null, "", "", "");
+		}
+
+
+		model.addAttribute("palestrante", dto);
+		return "palestrante/formulario";
+	}
+
+	// SALVAR
+	@PostMapping("/salvar")
+	public String salvar(@ModelAttribute("palestrante") @Valid AtualizacaoPalestrante dto, BindingResult result) {
 
         model.addAttribute("palestrante", dto);
         return "palestrante/cadastro"; // 🔥 igual aluno
@@ -75,12 +103,31 @@ public class PalestranteController {
                          RedirectAttributes redirectAttributes,
                          Model model) {
 
+<<<<<<< HEAD
         // 🔴 erro de validação
         if (result.hasErrors()) {
             return dto.id() == null 
                 ? "palestrante/cadastro" 
                 : "palestrante/formulario";
         }
+=======
+
+		if (result.hasErrors()) {
+			return "palestrante/formulario";
+		}
+
+
+		service.salvarOuAtualizar(dto);
+		return "redirect:/palestrante";
+	}
+
+	// DELETE
+	@GetMapping("/delete/{id}")
+	public String deletar(@PathVariable Long id) {
+		service.apagarPorId(id);
+		return "redirect:/palestrante";
+	}
+>>>>>>> 95a0cf7548a321539d9403468a459187e22cd9db
 
         try {
             Palestrante salvo = service.salvarOuAtualizar(dto);
@@ -119,4 +166,5 @@ public class PalestranteController {
 
         return "redirect:/palestrante";
     }
+
 }
