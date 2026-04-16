@@ -14,7 +14,8 @@ public class Aluno {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String curso;
+    private String cpf;
+    private String senha;
     @Column(unique = true)
     private String email;
     private String linkedin;

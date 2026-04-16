@@ -26,6 +26,7 @@ public class Palestrante {
     private String telefone;
     @Column(unique = true)
     private String cpf;
+    private String convite;
 
 }
 
