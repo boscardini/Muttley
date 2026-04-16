@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil Institucional</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: white; padding: 50px; }
+        .card { background-color: #1e1e1e; padding: 30px; border-radius: 15px; border: 1px solid #333; max-width: 500px; margin: auto; }
+        .info-group { margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .label { color: #888; font-size: 0.9em; display: block; }
+        .value { font-size: 1.2em; font-weight: bold; color: #007bff; }
+        .btn-edit { display: inline-block; width: 100%; padding: 12px; background-color: #ffc107; color: #000; 
+                    text-align: center; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 20px; }
+        .btn-back { display: block; text-align: center; margin-top: 15px; color: #888; text-decoration: none; }
+		.btn-manage {
+		        display: block;
+		        padding: 15px;
+		        background-color: #333;
+		        color: white;
+		        text-decoration: none;
+		        border-radius: 8px;
+		        font-weight: bold;
+		        text-align: left;
+		        transition: 0.3s;
+		        border: 1px solid transparent;
+		    }
+		    .btn-manage:hover {
+		        background-color: #444;
+		        border-color: #007bff;
+		        transform: translateX(5px);
+		    }
+		
+		/* Adicione este estilo ao seu bloco <style> */
+		    .btn-delete {
+		        display: inline-block;
+		        width: 100%;
+		        padding: 12px;
+		        background-color: transparent;
+		        color: #dc3545;
+		        text-align: center;
+		        text-decoration: none;
+		        border: 1px solid #dc3545;
+		        border-radius: 5px;
+		        font-weight: bold;
+		        box-sizing: border-box;
+		        transition: 0.3s;
+		    }
+		    .btn-delete:hover {
+		        background-color: #dc3545;
+		        color: white;
+		    }
+		
+		</style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Dados da Instituição</h2>
+        <hr style="border: 0; border-top: 1px solid #444; margin-bottom: 25px;">
+
+        <div class="info-group">
+            <span class="label">Nome da Instituição</span>
+            <span class="value" th:text="${instituicao.nome}">Nome Fantasia</span>
+        </div>
+
+        <div class="info-group">
+            <span class="label">CNPJ</span>
+            <span class="value" th:text="${instituicao.cnpj}">00.000.000/0001-00</span>
+        </div>
+
+        <div class="info-group">
+            <span class="label">E-mail de Contato</span>
+            <span class="value" th:text="${instituicao.email}">contato@empresa.com</span>
+        </div>
+
+        <a th:href="@{/instituicao/editar/{id}(id=${instituicao.id})}" class="btn-edit">
+            Editar Informações
+        </a>
+		
+		<div style="margin-top: 10px;">
+		    <a th:href="@{/instituicao/delete/{id}(id=${instituicao.id})}" 
+		       class="btn-delete"
+		       onclick="return confirm('ATENÇÃO: Isso excluirá permanentemente sua conta e todos os dados da instituição. Deseja continuar?')">
+		       Excluir Minha Conta
+		    </a>
+		</div>
+		
+		<div style="margin-top: 30px; padding: 20px; border: 1px dashed #444; border-radius: 10px; background-color: #252525;">
+		    <h3 style="margin-top: 0; color: #fff; font-size: 1.1em;">Gestão do Evento</h3>
+		    
+		    <div style="display: flex; gap: 10px; flex-direction: column;">
+		        <a th:href="@{/palestrante}" class="btn-manage">
+		            <span style="margin-right: 10px;">🎙️</span> Gerenciar Palestrantes
+		        </a>
+
+		        <a th:href="@{/palestra}" class="btn-manage">
+		            <span style="margin-right: 10px;">📅</span> Gerenciar Cronograma de Palestras
+		        </a>
+		    </div>
+		</div>
+
+        <a th:href="@{/instituicao/login}" class="btn-back">Sair</a>
+    </div>
+
+</body>
+</html>

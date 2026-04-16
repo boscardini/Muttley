@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Institucional - Muttley</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #121212; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background-color: #1e1e1e; padding: 30px; border-radius: 10px; border: 1px solid #333; width: 350px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #444; background: #252525; color: white; box-sizing: border-box; }
+        .btn-login { width: 100%; padding: 10px; background-color: #007bff; border: none; color: white; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-login:hover { background-color: #0056b3; }
+        .error-msg { color: #ff6b6b; font-size: 0.9em; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <h2>Muttley</h2>
+        <p>Login Institucional</p>
+
+        <div th:if="${error}" class="error-msg">
+            <p th:text="${error}"></p>
+        </div>
+
+        <form th:action="@{/instituicao/login}" method="post">
+            <input type="email" name="email" placeholder="E-mail da Instituição" required>
+            <input type="password" name="senha" placeholder="Senha" required>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+
+        <p style="margin-top: 20px; font-size: 0.8em;">
+            Não tem cadastro? <a th:href="@{/instituicao/cadastro-instituicao}" style="color: #007bff;">Clique aqui</a>
+        </p>
+    </div>
+
+</body>
+</html>
