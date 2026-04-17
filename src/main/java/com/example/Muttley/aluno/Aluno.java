@@ -14,10 +14,11 @@ public class Aluno {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String cpf;
-    private String senha;
+//    private String cpf;
+//    private String senha;
+//    private String linkedin;
     @Column(unique = true)
     private String email;
-    private String linkedin;
+    
     
 }

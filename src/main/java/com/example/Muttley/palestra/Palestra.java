@@ -21,8 +21,10 @@ public class Palestra {
     private List<String>habilidades;
     private String palestrante;
     private LocalDate dataInicio = LocalDate.now();
+    @Column(columnDefinition = "TIME")
     private LocalTime horaInicio = LocalTime.now();
     private LocalDate dataFim = LocalDate.now();
+    @Column(columnDefinition = "TIME")
     private LocalTime horaFim = LocalTime.now();
     
     @Column(unique = true)
