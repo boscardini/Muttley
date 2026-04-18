@@ -1,7 +1,7 @@
-package com.example.Muttley.Palestrante;
+package com.example.Muttley.participante;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PalestranteRepository extends JpaRepository<Palestrante, Long>{}
+public interface ParticipanteRepository extends JpaRepository<Participante, Long> {}

@@ -1,4 +1,4 @@
-package com.example.Muttley.aluno;
+package com.example.Muttley.participante;
 
 import java.util.List;
 
@@ -9,30 +9,30 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/alunos")
+@RequestMapping("/participantes")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class AlunoController {
+public class ParticipanteController {
 
-    private final AlunoService service;
+    private final ParticipanteService service;
 
     @PostMapping
-    public ResponseEntity<AlunoResponseDTO> cadastrar(@RequestBody @Valid AlunoRequestDTO dto) {
+    public ResponseEntity<ParticipanteResponseDTO> cadastrar(@RequestBody @Valid ParticipanteRequestDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto));
     }
 
-    @PutMapping("/{id}") // Para Editar (PUT /alunos/1)
-    public ResponseEntity<AlunoResponseDTO> editar(@PathVariable Long id, @RequestBody @Valid AlunoRequestDTO dto) {
+    @PutMapping("/{id}") 
+    public ResponseEntity<ParticipanteResponseDTO> editar(@PathVariable Long id, @RequestBody @Valid ParticipanteRequestDTO dto) {
         return ResponseEntity.ok(service.atualizar(id, dto));
     }
 
     @GetMapping
-    public ResponseEntity<List<AlunoResponseDTO>> listar() {
+    public ResponseEntity<List<ParticipanteResponseDTO>> listar() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlunoResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ParticipanteResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 

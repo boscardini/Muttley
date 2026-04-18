@@ -1,4 +1,4 @@
-package com.example.Muttley.Palestrante;
+package com.example.Muttley.apresentador;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,32 +9,32 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/palestrantes")
+@RequestMapping("/apresentadores")
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class PalestranteController {
+public class ApresentadorController {
 
-    private final PalestranteService service;
+    private final ApresentadorService service;
 
     @PostMapping
-    public ResponseEntity<PalestranteResponseDTO> cadastrar(@RequestBody @Valid PalestranteRequestDTO dto) {
-        PalestranteResponseDTO response = service.salvar(dto);
+    public ResponseEntity<ApresentadorResponseDTO> cadastrar(@RequestBody @Valid ApresentadorRequestDTO dto) {
+        ApresentadorResponseDTO response = service.salvar(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PalestranteResponseDTO> editar(@PathVariable Long id, @RequestBody @Valid PalestranteRequestDTO dto) {
-        PalestranteResponseDTO response = service.atualizar(id, dto);
+    public ResponseEntity<ApresentadorResponseDTO> editar(@PathVariable Long id, @RequestBody @Valid ApresentadorRequestDTO dto) {
+        ApresentadorResponseDTO response = service.atualizar(id, dto);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<PalestranteResponseDTO>> listar() {
+    public ResponseEntity<List<ApresentadorResponseDTO>> listar() {
         return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PalestranteResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ApresentadorResponseDTO> buscarPorId(@PathVariable Long id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 

@@ -1,4 +1,4 @@
-package com.example.Muttley.Palestrante;
+package com.example.Muttley.apresentador;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "palestrantes")
+@Table(name = "apresentadores")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
-public class Palestrante {
+public class Apresentador {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
