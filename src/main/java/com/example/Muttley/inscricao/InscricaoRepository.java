@@ -24,4 +24,5 @@ public interface InscricaoRepository extends JpaRepository<Inscricao, Long> {
     List<Inscricao> findByParticipanteId(Long participanteId);
     Optional<Inscricao> findByEventoIdAndParticipanteId(Long eventoId, Long participanteId);
     long countByEventoId(Long eventoId);
+    void deleteByParticipanteId(Long participanteId);
 }

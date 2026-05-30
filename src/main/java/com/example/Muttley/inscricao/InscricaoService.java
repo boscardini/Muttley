@@ -174,6 +174,12 @@ public class InscricaoService {
     private int calcularXpComTetoMaximo(Inscricao inscricao) {
         Evento evento = inscricao.getEvento();
         
+        // Trava anti-crash caso o evento ou o check-in estejam com datas em branco
+        if (evento.getHoraInicio() == null || evento.getHoraFim() == null || 
+            inscricao.getDataHoraCheckIn() == null || inscricao.getDataHoraCheckOut() == null) {
+            return 10; // Fallback de segurança 
+        }
+
         long minutosPlanejados = Duration.between(evento.getHoraInicio(), evento.getHoraFim()).toMinutes();
         long minutosReais = Duration.between(inscricao.getDataHoraCheckIn(), inscricao.getDataHoraCheckOut()).toMinutes();
         

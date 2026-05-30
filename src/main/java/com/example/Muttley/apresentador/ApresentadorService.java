@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.Muttley.evento.Evento;
+import com.example.Muttley.evento.EventoRepository;
+
 import java.util.List;
 
 @Service
@@ -13,6 +16,7 @@ public class ApresentadorService {
 
     private final ApresentadorRepository repository;
     private final ApresentadorMapper mapper;
+    private final EventoRepository eventoRepository;
 
     @Transactional
     public ApresentadorResponseDTO salvar(ApresentadorRequestDTO dto) {
@@ -44,9 +48,14 @@ public class ApresentadorService {
 
     @Transactional
     public void apagar(Long id) {
-        if (!repository.existsById(id)) {
-            throw new EntityNotFoundException("Apresentador não encontrado");
+        // 1. Encontra todos os eventos onde esse apresentador está
+        List<Evento> eventos = eventoRepository.findByApresentadoresId(id);
+        // 2. Remove o apresentador de cada um
+        for (Evento evento : eventos) {
+            evento.getApresentadores().removeIf(a -> a.getId().equals(id));
+            eventoRepository.save(evento);
         }
+        // 3. Agora pode apagar o apresentador
         repository.deleteById(id);
     }
 }

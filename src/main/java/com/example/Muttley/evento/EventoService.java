@@ -35,6 +35,9 @@ public class EventoService {
     @Transactional
     public EventoResponseDTO salvar(EventoRequestDTO dto) {
         Evento evento = mapper.toEntity(dto);
+        
+        String tokenEstatico = java.util.UUID.randomUUID().toString().substring(0, 8);
+        evento.setTokenCheckoutEstatico(tokenEstatico);
 
         if (dto.apresentadoresIds() != null && !dto.apresentadoresIds().isEmpty()) {
             List<Apresentador> listaApresentadores = apresentadorRepository.findAllById(dto.apresentadoresIds());

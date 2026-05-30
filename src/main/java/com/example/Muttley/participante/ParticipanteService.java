@@ -1,6 +1,8 @@
 package com.example.Muttley.participante;
 
 import com.example.Muttley.infra.RegraDeNegocioException;
+import com.example.Muttley.inscricao.InscricaoRepository;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ public class ParticipanteService {
 
     private final ParticipanteRepository repository;
     private final ParticipanteMapper mapper;
+    private final InscricaoRepository inscricaoRepository;
 
     @Transactional
     public ParticipanteResponseDTO salvar(ParticipanteRequestDTO dto) {
@@ -63,6 +66,7 @@ public class ParticipanteService {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Participante não encontrado");
         }
+        inscricaoRepository.deleteByParticipanteId(id);
         repository.deleteById(id);
     }
 
@@ -76,4 +80,6 @@ public class ParticipanteService {
 
         return mapper.toDto(participante);
     }
+
+    
 }
