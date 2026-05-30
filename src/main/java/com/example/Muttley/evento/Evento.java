@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.example.Muttley.apresentador.Apresentador;
+import com.example.Muttley.usuario.Usuario;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,6 +27,10 @@ public class Evento {
     
     @Column(columnDefinition = "TEXT")
     private String descricao;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_criador_id")
+    private Usuario criador;
 
     @ManyToMany
     @JoinTable(

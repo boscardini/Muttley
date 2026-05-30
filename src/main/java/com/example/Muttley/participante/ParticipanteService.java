@@ -1,11 +1,10 @@
 package com.example.Muttley.participante;
 
+import com.example.Muttley.infra.RegraDeNegocioException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.example.Muttley.infra.RegraDeNegocioException;
 
 import java.util.List;
 
@@ -18,25 +17,45 @@ public class ParticipanteService {
 
     @Transactional
     public ParticipanteResponseDTO salvar(ParticipanteRequestDTO dto) {
+        if (repository.existsByCpf(dto.cpf())) {
+            throw new RegraDeNegocioException("Este CPF já está cadastrado no sistema.");
+        }
+        if (repository.existsByEmail(dto.email())) {
+            throw new RegraDeNegocioException("Este E-mail já está em uso por outro participante.");
+        }
+
         Participante participante = mapper.toEntity(dto);
-        Participante participanteSalvo = repository.save(participante);
-        return mapper.toDto(participanteSalvo);
+        participante.setPontosTotais(0); // Todo aluno começa com 0 XP
+        return mapper.toDto(repository.save(participante));
     }
 
     @Transactional
     public ParticipanteResponseDTO atualizar(Long id, ParticipanteRequestDTO dto) {
-        Participante participanteExistente = repository.findById(id)
+        Participante existente = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Participante não encontrado"));
-        mapper.updateEntityFromDto(dto, participanteExistente);
         
-        return mapper.toDto(repository.save(participanteExistente));
+        // Verifica se ele tentou mudar para um email/cpf de outra pessoa
+        if (!existente.getCpf().equals(dto.cpf()) && repository.existsByCpf(dto.cpf())) {
+            throw new RegraDeNegocioException("Este CPF já está sendo utilizado.");
+        }
+        if (!existente.getEmail().equals(dto.email()) && repository.existsByEmail(dto.email())) {
+            throw new RegraDeNegocioException("Este E-mail já está sendo utilizado.");
+        }
+
+        mapper.updateEntityFromDto(dto, existente);
+        return mapper.toDto(repository.save(existente));
     }
 
     public List<ParticipanteResponseDTO> listarTodos() {
-        return repository.findAll()
-                .stream()
+        return repository.findAll().stream()
                 .map(mapper::toDto)
                 .toList();
+    }
+
+    public ParticipanteResponseDTO buscarPorId(Long id) {
+        Participante participante = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Participante não encontrado"));
+        return mapper.toDto(participante);
     }
 
     @Transactional
@@ -45,12 +64,6 @@ public class ParticipanteService {
             throw new EntityNotFoundException("Participante não encontrado");
         }
         repository.deleteById(id);
-    }
-    
-    public ParticipanteResponseDTO buscarPorId(Long id) {
-        Participante participante = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Participante não encontrado"));
-        return mapper.toDto(participante);
     }
 
     public ParticipanteResponseDTO realizarLogin(ParticipanteLoginDTO dto) {
