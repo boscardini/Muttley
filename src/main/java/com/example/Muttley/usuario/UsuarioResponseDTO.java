@@ -4,6 +4,6 @@ public record UsuarioResponseDTO(
     Long id,
     String nome,
     String email,
-    Perfil perfil,
+    TipoUsuario tipo,
     boolean aprovado
 ) {}

@@ -9,7 +9,6 @@ import com.example.Muttley.integracao.CertificadoService;
 
 @RestController
 @RequestMapping("/inscricoes")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class InscricaoController {
 

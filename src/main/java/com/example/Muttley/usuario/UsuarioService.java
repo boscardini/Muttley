@@ -17,22 +17,9 @@ public class UsuarioService {
     @Transactional
     public UsuarioResponseDTO salvar(UsuarioRequestDTO dto) {
         Usuario usuario = mapper.toEntity(dto);
+        usuario.setTipo(TipoUsuario.GESTOR);
+        usuario.setAprovado(false); 
         return mapper.toDto(repository.save(usuario));
-    }
-
-    public UsuarioResponseDTO realizarLogin(String email, String senha) {
-        Usuario usuario = repository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        if (!usuario.getSenha().equals(senha)) {
-            throw new RuntimeException("Senha incorreta");
-        }
-
-        if (!usuario.isAprovado()) {
-            throw new RuntimeException("Aguarde a aprovação do administrador");
-        }
-
-        return mapper.toDto(usuario);
     }
 
     @Transactional
@@ -43,8 +30,11 @@ public class UsuarioService {
         repository.save(usuario);
     }
 
-    public List<UsuarioResponseDTO> listarTodos() {
-        return repository.findAll().stream().map(mapper::toDto).toList();
+    public List<UsuarioResponseDTO> listarGestores() {
+        return repository.findByTipo(TipoUsuario.GESTOR)
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
     @Transactional

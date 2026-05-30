@@ -10,7 +10,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/eventos")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class EventoController {
 

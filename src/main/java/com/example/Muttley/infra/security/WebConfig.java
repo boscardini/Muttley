@@ -1,6 +1,8 @@
 package com.example.Muttley.infra.security;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -19,11 +21,13 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**"); // O padrão "/**" diz que o filtro deve olhar todas as pastas e subpastas
     }
 
+    @Value("${muttley.cors.origins}")
+    private String corsOrigins;
+
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Configuração de CORS essencial para permitir que o Next.js (porta 3000) converse com o Java (porta 8083)
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:3000") // Permite chamadas vindas do seu servidor de front-end
+                .allowedOrigins(corsOrigins.split(","))
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

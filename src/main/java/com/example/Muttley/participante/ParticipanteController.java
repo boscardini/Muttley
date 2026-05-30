@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/participantes")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class ParticipanteController {
 

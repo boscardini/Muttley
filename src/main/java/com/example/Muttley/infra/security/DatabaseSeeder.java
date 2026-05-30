@@ -25,7 +25,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     public void run(String... args) throws Exception {
         if (!usuarioRepository.existsByTipo(TipoUsuario.ADMIN)) {
             Usuario primeiroAdmin = new Usuario();
-            primeiroAdmin.setLogin(adminUser);
+            primeiroAdmin.setNome("Administrador Principal");
+            primeiroAdmin.setEmail(adminUser);
             primeiroAdmin.setSenha(adminPassword);
             primeiroAdmin.setTipo(TipoUsuario.ADMIN);
             primeiroAdmin.setAprovado(true);

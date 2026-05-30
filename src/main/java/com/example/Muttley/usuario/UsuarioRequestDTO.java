@@ -14,5 +14,5 @@ public record UsuarioRequestDTO(
     @NotBlank(message = "A senha é obrigatória")
     String senha,
 
-    Perfil perfil // ADMIN ou GESTOR
+    TipoUsuario tipo // ADMIN ou GESTOR
 ) {}
