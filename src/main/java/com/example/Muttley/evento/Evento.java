@@ -28,10 +28,6 @@ public class Evento {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @ManyToOne
-    @JoinColumn(name = "usuario_criador_id")
-    private Usuario criador;
-
     @ManyToMany
     @JoinTable(
         name = "eventos_apresentadores",
@@ -66,7 +62,6 @@ public class Evento {
         if (horaInicio == null) horaInicio = LocalTime.now();
         if (complexidade == null) complexidade = 0;
         
-        // Se o evento exigir checkout, geramos os tokens iniciais automaticamente
         if (requerCheckout) {
             if (tokenCheckoutEstatico == null) {
                 this.tokenCheckoutEstatico = "ESTATIC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();

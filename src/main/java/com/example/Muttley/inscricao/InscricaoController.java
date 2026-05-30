@@ -59,4 +59,17 @@ public class InscricaoController {
                 .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
                 .body(pdfBytes);
     }
+
+    @GetMapping("/participante/{participanteId}")
+    public ResponseEntity<List<InscricaoResponseDTO>> listarPorParticipante(@PathVariable Long participanteId) {
+        return ResponseEntity.ok(service.listarPorParticipante(participanteId));
+    }
+
+    @DeleteMapping("/evento/{eventoId}/participante/{participanteId}")
+    public ResponseEntity<Void> cancelarInscricao(
+            @PathVariable Long eventoId,
+            @PathVariable Long participanteId) {
+        service.cancelarInscricao(eventoId, participanteId);
+        return ResponseEntity.noContent().build();
+    }
 }

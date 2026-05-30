@@ -7,9 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.Muttley.apresentador.Apresentador;
 import com.example.Muttley.apresentador.ApresentadorRepository;
-import com.example.Muttley.usuario.Usuario;
-import com.example.Muttley.usuario.UsuarioRepository;
-import com.example.Muttley.inscricao.InscricaoRepository; // <-- Importação adicionada
+import com.example.Muttley.inscricao.InscricaoRepository;
 import com.example.Muttley.infra.RegraDeNegocioException;
 
 import java.util.List;
@@ -21,28 +19,33 @@ public class EventoService {
     private final EventoRepository repository;
     private final EventoMapper mapper;
     private final ApresentadorRepository apresentadorRepository;
-    private final UsuarioRepository usuarioRepository;
-    private final InscricaoRepository inscricaoRepository; // <-- Injeção adicionada
+    private final InscricaoRepository inscricaoRepository;
+
+    private EventoResponseDTO enriquecerComInscritos(Evento evento) {
+        EventoResponseDTO dto = mapper.toDto(evento);
+        long total = inscricaoRepository.countByEventoId(evento.getId());
+        return new EventoResponseDTO(
+            dto.id(), dto.titulo(), dto.descricao(), dto.dataInicio(), dto.horaInicio(),
+            dto.dataFim(), dto.horaFim(), dto.complexidade(), dto.requerCheckout(),
+            dto.tokenCheckoutEstatico(), dto.tokenCheckoutDinamico(), dto.apresentadores(),
+            total
+        );
+    }
 
     @Transactional
-    public EventoResponseDTO salvar(EventoRequestDTO dto, Long usuarioId) {
+    public EventoResponseDTO salvar(EventoRequestDTO dto) {
         Evento evento = mapper.toEntity(dto);
-
-        Usuario criador = usuarioRepository.findById(usuarioId)
-                .orElseThrow(() -> new RegraDeNegocioException("Usuário criador não encontrado."));
-        evento.setCriador(criador);
 
         if (dto.apresentadoresIds() != null && !dto.apresentadoresIds().isEmpty()) {
             List<Apresentador> listaApresentadores = apresentadorRepository.findAllById(dto.apresentadoresIds());
             evento.setApresentadores(listaApresentadores);
         }
 
-        return mapper.toDto(repository.save(evento));
+        return enriquecerComInscritos(repository.save(evento));
     }
 
     @Transactional
-    public EventoResponseDTO atualizar(Long id, EventoRequestDTO dto, Long usuarioId, String role) {
-        // Garante que o usuário logado possui nível gerencial (ADMIN ou GESTOR)
+    public EventoResponseDTO atualizar(Long id, EventoRequestDTO dto, String role) {
         if (!"ADMIN".equals(role) && !"GESTOR".equals(role)) {
             throw new RegraDeNegocioException("Acesso negado: Você não possui permissão para alterar eventos.");
         }
@@ -56,26 +59,28 @@ public class EventoService {
             List<Apresentador> listaApresentadores = apresentadorRepository.findAllById(dto.apresentadoresIds());
             existente.setApresentadores(listaApresentadores);
         } else {
-            existente.setApresentadores(List.of()); 
+            if (existente.getApresentadores() != null) {
+                existente.getApresentadores().clear();
+            }
         }
         
-        return mapper.toDto(repository.save(existente));
+        return enriquecerComInscritos(repository.save(existente));
     }
 
     public List<EventoResponseDTO> listarTodos() {
         return repository.findAll().stream()
-                .map(mapper::toDto)
+                .map(this::enriquecerComInscritos)
                 .toList();
     }
 
     public EventoResponseDTO buscarPorId(Long id) {
         Evento evento = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Evento não encontrado"));
-        return mapper.toDto(evento);
+        return enriquecerComInscritos(evento);
     }
 
     @Transactional
-    public void apagar(Long id, Long usuarioId, String role) {
+    public void apagar(Long id, String role) {
         if (!"ADMIN".equals(role) && !"GESTOR".equals(role)) {
             throw new RegraDeNegocioException("Acesso negado: Você não possui permissão para excluir eventos.");
         }
@@ -83,6 +88,7 @@ public class EventoService {
         if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Evento não encontrado");
         }
+
         inscricaoRepository.deleteByEventoId(id);
         repository.deleteById(id);
     }

@@ -28,7 +28,6 @@ public class InscricaoService {
 
     @Transactional
     public InscricaoResponseDTO realizarInscricao(InscricaoRequestDTO dto) {
-        // Lógica de inscrição permanece idêntica...
         Participante participante = participanteRepository.findById(dto.participanteId())
                 .orElseThrow(() -> new RegraDeNegocioException("Participante não encontrado"));
         Evento evento = eventoRepository.findById(dto.eventoId())
@@ -61,6 +60,7 @@ public class InscricaoService {
         }
 
         inscricao.setDataHoraCheckIn(LocalDateTime.now());
+        boolean precisaEnviarCertificado = false;
 
         // ---> EVENTO SEM CHECKOUT EXIGIDO <---
         if (!inscricao.getEvento().isRequerCheckout()) {
@@ -73,12 +73,32 @@ public class InscricaoService {
             
             participante.setPontosTotais(participante.getPontosTotais() + xpGanho);
             participanteRepository.save(participante);
+            
+            precisaEnviarCertificado = true; // Marca a flag para disparar o e-mail no final
         } else {
             // Fluxo normal com obrigatoriedade de saída posterior
             inscricao.setStatus(StatusInscricao.CHECK_IN_REALIZADO);
         }
 
-        return mapper.toDto(inscricaoRepository.save(inscricao));
+        // Salva a inscrição PRIMEIRO para garantir que o PDF saia com os dados (status/data) atualizados
+        Inscricao inscricaoSalva = inscricaoRepository.save(inscricao);
+
+        // Dispara o e-mail caso o evento tenha sido concluído direto na portaria
+        if (precisaEnviarCertificado) {
+            try {
+                byte[] pdfBytes = certificadoService.gerarCertificadoPdf(inscricaoSalva);
+                emailService.enviarCertificadoPdf(
+                        participante.getEmail(), 
+                        participante.getNome(), 
+                        inscricaoSalva.getEvento().getTitulo(), 
+                        pdfBytes
+                );
+            } catch (Exception e) {
+                System.err.println("Falha ao gerar/enviar certificado no check-in: " + e.getMessage());
+            }
+        }
+
+        return mapper.toDto(inscricaoSalva);
     }
 
     @Transactional
@@ -125,7 +145,7 @@ public class InscricaoService {
                     pdfBytes
             );
         } catch (Exception e) {
-            System.err.println("Falha ao gerar/enviar certificado: " + e.getMessage());
+            System.err.println("Falha ao gerar/enviar certificado no check-out: " + e.getMessage());
         }
 
         return mapper.toDto(inscricaoSalva);
@@ -154,13 +174,9 @@ public class InscricaoService {
     private int calcularXpComTetoMaximo(Inscricao inscricao) {
         Evento evento = inscricao.getEvento();
         
-        // 1. Tempo total máximo permitido (Estipulado na criação)
         long minutosPlanejados = Duration.between(evento.getHoraInicio(), evento.getHoraFim()).toMinutes();
-        
-        // 2. Tempo que o aluno de fato ficou presente
         long minutosReais = Duration.between(inscricao.getDataHoraCheckIn(), inscricao.getDataHoraCheckOut()).toMinutes();
         
-        // ---> A MÁGICA DO TETO: Pega o menor valor entre o real e o planejado <---
         long minutosEfetivos = Math.min(minutosReais, minutosPlanejados);
         
         return converterMinutosParaXp(minutosEfetivos, evento.getComplexidade());
@@ -175,5 +191,18 @@ public class InscricaoService {
         double multiplicadorBonus = complexidade * 0.10;
         
         return (int) Math.round(xpBase + (xpBase * multiplicadorBonus));
+    }
+
+    public List<InscricaoResponseDTO> listarPorParticipante(Long participanteId) {
+        return inscricaoRepository.findByParticipanteId(participanteId).stream()
+                .map(mapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public void cancelarInscricao(Long eventoId, Long participanteId) {
+        Inscricao inscricao = inscricaoRepository.findByEventoIdAndParticipanteId(eventoId, participanteId)
+                .orElseThrow(() -> new RegraDeNegocioException("Inscrição não encontrada."));
+        inscricaoRepository.delete(inscricao);
     }
 }

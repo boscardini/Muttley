@@ -20,4 +20,8 @@ public interface InscricaoRepository extends JpaRepository<Inscricao, Long> {
     @Modifying
     @Query("DELETE FROM Inscricao i WHERE i.evento.id = :eventoId")
     void deleteByEventoId(@Param("eventoId") Long eventoId);
+
+    List<Inscricao> findByParticipanteId(Long participanteId);
+    Optional<Inscricao> findByEventoIdAndParticipanteId(Long eventoId, Long participanteId);
+    long countByEventoId(Long eventoId);
 }

@@ -13,7 +13,7 @@ public record EventoRequestDTO(
     
     @NotBlank(message = "A descrição é obrigatória") 
     String descricao,
-    Long criadorId,
+    
     List<Long> apresentadoresIds,
 
     LocalDate dataInicio,
@@ -26,5 +26,4 @@ public record EventoRequestDTO(
     Integer complexidade,
     
     boolean requerCheckout
-    
 ) {}
