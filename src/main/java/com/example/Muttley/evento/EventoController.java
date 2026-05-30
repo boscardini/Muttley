@@ -41,4 +41,10 @@ public class EventoController {
         service.apagar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/girar-token")
+    public ResponseEntity<java.util.Map<String, String>> girarToken(@PathVariable Long id) {
+        String novoToken = service.atualizarTokenCheckoutDinamico(id);
+        return ResponseEntity.ok(java.util.Map.of("token", novoToken));
+    }
 }

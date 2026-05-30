@@ -41,4 +41,9 @@ public class ParticipanteController {
         service.apagar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<ParticipanteResponseDTO> login(@RequestBody @Valid ParticipanteLoginDTO dto) {
+        return ResponseEntity.ok(service.realizarLogin(dto));
+    }
 }

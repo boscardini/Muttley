@@ -2,6 +2,12 @@ package com.example.Muttley.evento;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import com.example.Muttley.apresentador.Apresentador;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,13 +27,16 @@ public class Evento {
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
+    @ManyToMany
+    @JoinTable(
+        name = "eventos_apresentadores",
+        joinColumns = @JoinColumn(name = "evento_id"),
+        inverseJoinColumns = @JoinColumn(name = "apresentador_id")
+    )
+    private List<Apresentador> apresentadores = new ArrayList<>();
+
     private LocalDate dataInicio;
     
-    /* * columnDefinition = "TIME"
-     * O Java tem o 'LocalTime', mas às vezes o banco de dados tenta salvar isso como 'DATETIME' 
-     * ou um número binário estranho. Esse comando força o banco a criar a coluna 
-     * exatamente com o tipo 'TIME' do SQL (ex: 14:30:00).
-     */
     @Column(columnDefinition = "TIME")
     private LocalTime horaInicio;
 
@@ -36,14 +45,30 @@ public class Evento {
     @Column(columnDefinition = "TIME")
     private LocalTime horaFim;
 
-    /* * @PrePersist
-     * Isso é um Gatilho de Ciclo de Vida (Lifecycle Trigger). 
-     * Milissegundos ANTES do Hibernate rodar o comando "INSERT" no banco de dados, ele executa essa função.
-     * É o lugar perfeito para garantir valores padrão, para que não dê erro de "null" no banco.
-     */
+    @Column(nullable = false)
+    private Integer complexidade = 0; 
+    
+    @Column(nullable = false)
+    private boolean requerCheckout = true;
+
+    private String tokenCheckoutEstatico;
+    
+    private String tokenCheckoutDinamico;
+
     @PrePersist
     protected void onCreate() {
         if (dataInicio == null) dataInicio = LocalDate.now();
         if (horaInicio == null) horaInicio = LocalTime.now();
+        if (complexidade == null) complexidade = 0;
+        
+        // Se o evento exigir checkout, geramos os tokens iniciais automaticamente
+        if (requerCheckout) {
+            if (tokenCheckoutEstatico == null) {
+                this.tokenCheckoutEstatico = "ESTATIC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            }
+            if (tokenCheckoutDinamico == null) {
+                this.tokenCheckoutDinamico = UUID.randomUUID().toString().substring(0, 8);
+            }
+        }
     }
 }

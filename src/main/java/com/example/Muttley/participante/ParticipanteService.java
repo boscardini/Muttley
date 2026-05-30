@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.Muttley.infra.RegraDeNegocioException;
+
 import java.util.List;
 
 @Service
@@ -48,6 +50,17 @@ public class ParticipanteService {
     public ParticipanteResponseDTO buscarPorId(Long id) {
         Participante participante = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Participante não encontrado"));
+        return mapper.toDto(participante);
+    }
+
+    public ParticipanteResponseDTO realizarLogin(ParticipanteLoginDTO dto) {
+    Participante participante = repository.findByCpf(dto.cpf())
+            .orElseThrow(() -> new RegraDeNegocioException("CPF ou Data de Nascimento inválidos."));
+
+    if (!participante.getDataNascimento().equals(dto.dataNascimento())) {
+        throw new RegraDeNegocioException("CPF ou Data de Nascimento inválidos.");
+    }
+
         return mapper.toDto(participante);
     }
 }

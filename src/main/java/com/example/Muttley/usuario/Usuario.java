@@ -7,40 +7,22 @@ import lombok.*;
 @Table(name = "usuarios")
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
 public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String nome;
-
     @Column(unique = true, nullable = false)
-    private String email;
+    private String login;
 
     @Column(nullable = false)
     private String senha;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Perfil perfil;
+    private TipoUsuario tipo; // ADMIN ou GESTOR
 
     @Column(nullable = false)
-    private boolean aprovado = false; 
-
-    @PrePersist
-    public void prePersist() {
-        if (this.perfil == Perfil.ADMIN) {
-            this.aprovado = true;
-        } else {
-            this.aprovado = false;
-        }
-    }
-}
-
-enum Perfil {
-    ADMIN,
-    GESTOR
+    private boolean aprovado;
 }

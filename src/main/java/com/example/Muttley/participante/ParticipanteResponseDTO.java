@@ -1,3 +1,12 @@
 package com.example.Muttley.participante;
 
-public record ParticipanteResponseDTO(Long id, String nome, String email) {}
+import java.time.LocalDate;
+
+public record ParticipanteResponseDTO(
+    Long id, 
+    String nome, 
+    String email, 
+    String cpf, 
+    LocalDate dataNascimento, 
+    Integer pontosTotais
+) {}
