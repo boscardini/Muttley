@@ -5,5 +5,6 @@ public record UsuarioResponseDTO(
     String nome,
     String email,
     TipoUsuario tipo,
-    boolean aprovado
+    boolean aprovado,
+    String assinaturaBase64
 ) {}
