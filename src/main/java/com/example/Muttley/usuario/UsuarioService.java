@@ -1,5 +1,8 @@
 package com.example.Muttley.usuario;
 
+import com.example.Muttley.evento.EventoRepository;
+import com.example.Muttley.infra.RegraDeNegocioException;
+
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +16,17 @@ public class UsuarioService {
 
     private final UsuarioRepository repository;
     private final UsuarioMapper mapper;
+    private final EventoRepository eventoRepository;
 
     @Transactional
     public UsuarioResponseDTO salvar(UsuarioRequestDTO dto) {
+        if (dto.assinaturaBase64() == null || dto.assinaturaBase64().isBlank()) {
+            throw new RegraDeNegocioException("A assinatura é obrigatória para o cadastro de gestor.");
+        }
         Usuario usuario = mapper.toEntity(dto);
         usuario.setTipo(TipoUsuario.GESTOR);
-        usuario.setAprovado(false); 
+        usuario.setAprovado(false);
+        usuario.setAssinaturaBase64(dto.assinaturaBase64().trim());
         return mapper.toDto(repository.save(usuario));
     }
 
@@ -39,6 +47,10 @@ public class UsuarioService {
 
     @Transactional
     public void apagar(Long id) {
+        if (eventoRepository.existsByGestorCriadorId(id)) {
+            throw new RegraDeNegocioException(
+                    "Não é possível excluir o gestor, pois existem eventos criados por ele.");
+        }
         repository.deleteById(id);
     }
 }

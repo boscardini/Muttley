@@ -25,7 +25,7 @@ public class SecurityInterceptor implements HandlerInterceptor {
         // Utilizar getServletPath() evita problemas com barras extras ou caminhos de contexto
         String path = request.getServletPath();
         
-        // 2. Liberação do Cadastro de Alunos/Participantes (Sem exigência de Token)
+        // 2. Liberação do Cadastro de Participantes (Sem exigência de Token)
         if (request.getMethod().equals("POST") && path.startsWith("/participantes")) {
             return true; 
         }

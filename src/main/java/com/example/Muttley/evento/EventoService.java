@@ -9,6 +9,9 @@ import com.example.Muttley.apresentador.Apresentador;
 import com.example.Muttley.apresentador.ApresentadorRepository;
 import com.example.Muttley.inscricao.InscricaoRepository;
 import com.example.Muttley.infra.RegraDeNegocioException;
+import com.example.Muttley.usuario.TipoUsuario;
+import com.example.Muttley.usuario.Usuario;
+import com.example.Muttley.usuario.UsuarioRepository;
 
 import java.util.List;
 
@@ -20,6 +23,7 @@ public class EventoService {
     private final EventoMapper mapper;
     private final ApresentadorRepository apresentadorRepository;
     private final InscricaoRepository inscricaoRepository;
+    private final UsuarioRepository usuarioRepository;
 
     private EventoResponseDTO enriquecerComInscritos(Evento evento) {
         EventoResponseDTO dto = mapper.toDto(evento);
@@ -28,16 +32,26 @@ public class EventoService {
             dto.id(), dto.titulo(), dto.descricao(), dto.dataInicio(), dto.horaInicio(),
             dto.dataFim(), dto.horaFim(), dto.complexidade(), dto.requerCheckout(),
             dto.tokenCheckoutEstatico(), dto.tokenCheckoutDinamico(), dto.apresentadores(),
+            dto.gestorCriadorId(), dto.gestorCriadorNome(), dto.assinaturaDescricao(),
             total
         );
     }
 
     @Transactional
-    public EventoResponseDTO salvar(EventoRequestDTO dto) {
+    public EventoResponseDTO salvar(EventoRequestDTO dto, Long gestorCriadorId) {
         Evento evento = mapper.toEntity(dto);
         
         String tokenEstatico = java.util.UUID.randomUUID().toString().substring(0, 8);
         evento.setTokenCheckoutEstatico(tokenEstatico);
+
+        if (gestorCriadorId != null) {
+            Usuario gestor = usuarioRepository.findById(gestorCriadorId)
+                    .orElseThrow(() -> new EntityNotFoundException("Gestor criador não encontrado"));
+            if (gestor.getTipo() != TipoUsuario.GESTOR && gestor.getTipo() != TipoUsuario.ADMIN) {
+                throw new RegraDeNegocioException("Apenas gestores ou administradores podem criar eventos.");
+            }
+            evento.setGestorCriador(gestor);
+        }
 
         if (dto.apresentadoresIds() != null && !dto.apresentadoresIds().isEmpty()) {
             List<Apresentador> listaApresentadores = apresentadorRepository.findAllById(dto.apresentadoresIds());

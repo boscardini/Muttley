@@ -17,8 +17,10 @@ public class EventoController {
     private final EventoService service;
 
     @PostMapping
-    public ResponseEntity<EventoResponseDTO> cadastrar(@RequestBody @Valid EventoRequestDTO dto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto));
+    public ResponseEntity<EventoResponseDTO> cadastrar(
+            @RequestBody @Valid EventoRequestDTO dto,
+            @RequestAttribute(value = "usuarioId", required = false) Long usuarioId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.salvar(dto, usuarioId));
     }
 
     @PutMapping("/{id}")

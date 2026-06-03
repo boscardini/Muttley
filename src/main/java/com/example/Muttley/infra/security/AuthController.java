@@ -35,8 +35,8 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioService.salvar(dto));
     }
 
-    @PostMapping("/login/aluno")
-    public ResponseEntity<Map<String, Object>> loginAluno(@RequestBody LoginAlunoDTO dto) {
+    @PostMapping("/login/participante")
+    public ResponseEntity<Map<String, Object>> loginParticipante(@RequestBody LoginParticipanteDTO dto) {
         Participante participante = participanteRepository.findByCpf(dto.cpf())
                 .orElseThrow(() -> new RegraDeNegocioException("CPF não cadastrado no sistema."));
 
@@ -44,12 +44,12 @@ public class AuthController {
             throw new RegraDeNegocioException("Data de nascimento incorreta.");
         }
 
-        String token = tokenService.gerarToken(participante.getId(), participante.getCpf(), "ALUNO");
+        String token = tokenService.gerarToken(participante.getId(), participante.getCpf(), "PARTICIPANTE");
 
         return ResponseEntity.ok(Map.of(
                 "token", token,
                 "nome", participante.getNome(),
-                "role", "ALUNO"
+                "role", "PARTICIPANTE"
         ));
     }
 
@@ -78,4 +78,4 @@ public class AuthController {
 }
 
 record LoginGerencialDTO(String email, String senha) {}
-record LoginAlunoDTO(String cpf, LocalDate dataNascimento) {}
+record LoginParticipanteDTO(String cpf, LocalDate dataNascimento) {}

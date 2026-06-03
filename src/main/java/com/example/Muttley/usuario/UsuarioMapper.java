@@ -14,5 +14,6 @@ public interface UsuarioMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "aprovado", ignore = true)
+    @Mapping(target = "assinaturaBase64", ignore = true)
     void updateEntityFromDto(UsuarioRequestDTO dto, @MappingTarget Usuario usuario);
 }

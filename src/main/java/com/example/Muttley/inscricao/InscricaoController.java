@@ -38,7 +38,7 @@ public class InscricaoController {
 
     @GetMapping("/historico/cpf/{cpf}")
     public ResponseEntity<List<InscricaoResponseDTO>> buscarHistorico(@PathVariable String cpf) {
-        return ResponseEntity.ok(service.buscarHistoricoDoAluno(cpf));
+        return ResponseEntity.ok(service.buscarHistoricoDoParticipante(cpf));
     }
 
     @GetMapping("/{id}/certificado")

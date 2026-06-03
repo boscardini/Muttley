@@ -29,4 +29,7 @@ public class Usuario {
 
     @Column(nullable = false)
     private boolean aprovado;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String assinaturaBase64;
 }

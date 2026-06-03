@@ -151,7 +151,7 @@ public class InscricaoService {
         return mapper.toDto(inscricaoSalva);
     }
 
-    public List<InscricaoResponseDTO> buscarHistoricoDoAluno(String cpf) {
+    public List<InscricaoResponseDTO> buscarHistoricoDoParticipante(String cpf) {
         if (participanteRepository.findByCpf(cpf).isEmpty()) {
             throw new RegraDeNegocioException("CPF não cadastrado");
         }

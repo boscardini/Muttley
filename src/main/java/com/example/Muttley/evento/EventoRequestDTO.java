@@ -25,5 +25,7 @@ public record EventoRequestDTO(
     @Max(value = 5, message = "A complexidade máxima é 5")
     Integer complexidade,
     
-    boolean requerCheckout
+    boolean requerCheckout,
+
+    String assinaturaDescricao
 ) {}

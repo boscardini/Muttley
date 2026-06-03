@@ -23,6 +23,6 @@ public class OpenApiConfig {
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")
-                                        .description("Insira o token JWT gerado no login gerencial ou aluno.")));
+                                        .description("Insira o token JWT gerado no login gerencial ou de participante.")));
     }
 }

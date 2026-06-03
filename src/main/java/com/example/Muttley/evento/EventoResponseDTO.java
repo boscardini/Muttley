@@ -18,5 +18,8 @@ public record EventoResponseDTO(
     String tokenCheckoutEstatico,
     String tokenCheckoutDinamico,
     List<ApresentadorResponseDTO> apresentadores,
+    Long gestorCriadorId,
+    String gestorCriadorNome,
+    String assinaturaDescricao,
     Long totalInscritos
 ) {}

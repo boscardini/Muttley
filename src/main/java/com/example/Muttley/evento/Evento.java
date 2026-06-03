@@ -56,6 +56,13 @@ public class Evento {
     
     private String tokenCheckoutDinamico;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "gestor_criador_id")
+    private Usuario gestorCriador;
+
+    @Column(columnDefinition = "TEXT")
+    private String assinaturaDescricao;
+
     @PrePersist
     protected void onCreate() {
         if (dataInicio == null) dataInicio = LocalDate.now();

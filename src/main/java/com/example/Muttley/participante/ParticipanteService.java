@@ -28,7 +28,7 @@ public class ParticipanteService {
         }
 
         Participante participante = mapper.toEntity(dto);
-        participante.setPontosTotais(0); // Todo aluno começa com 0 XP
+        participante.setPontosTotais(0); // Todo participante começa com 0 XP
         return mapper.toDto(repository.save(participante));
     }
 

@@ -26,7 +26,7 @@ public class TokenService {
         return Jwts.builder()
                 .setSubject(login)
                 .claim("id", id)
-                .claim("role", tipoUsuario) // "ALUNO" ou "GESTOR"
+                .claim("role", tipoUsuario) // "PARTICIPANTE" ou "GESTOR"
                 .setIssuedAt(agora)
                 .setExpiration(dataExpiracao)
                 .signWith(key)
