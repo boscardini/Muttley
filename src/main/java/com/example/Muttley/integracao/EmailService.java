@@ -21,7 +21,6 @@ public class EmailService {
         mensagem.setSubject("Inscrição Confirmada: " + tituloEvento);
         mensagem.setText("Olá, " + nomeParticipante + "!\n\n" +
                 "Sua inscrição para o evento '" + tituloEvento + "' está confirmada.\n\n" +
-                "Para agilizar sua entrada, acesse a plataforma Muttley informando seu CPF e Data de Nascimento para visualizar o seu QR Code de Ingresso.\n\n" +
                 "Nos vemos lá!");
         
         mailSender.send(mensagem);
